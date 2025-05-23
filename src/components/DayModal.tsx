@@ -86,6 +86,7 @@ export default function DayModal({ date, onClose }: DayModalProps) {
               <option value="sick">Sick Leave</option>
               <option value="casual">Casual Leave</option>
               <option value="vacation">Vacation</option>
+              <option value="night">Night</option>
             </select>
           </div>
 

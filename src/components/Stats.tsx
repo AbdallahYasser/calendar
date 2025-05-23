@@ -13,7 +13,7 @@ import {
   isSunday,
   getYear,
 } from 'date-fns';
-import { ChevronDown, ChevronUp, Trash2, Plus, BarChart3, Clock, Calendar, Users, Briefcase, Home as HomeIcon, PartyPopper, Thermometer, Coffee, Palmtree as PalmTree } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2, Plus, BarChart3, Clock, Calendar, Users, Briefcase, Home as HomeIcon, PartyPopper, Thermometer, Coffee, Palmtree as PalmTree, Moon } from 'lucide-react';
 import { useWorkStore } from '../store';
 
 export default function Stats() {
@@ -45,6 +45,7 @@ export default function Stats() {
     let sickLeaveCount = 0;
     let casualLeaveCount = 0;
     let vacationCount = 0;
+    let nightCount = 0;
     let totalLoggedDays = 0;
 
     Object.entries(dayData).forEach(([dateKey, dayInfo]) => {
@@ -62,7 +63,6 @@ export default function Stats() {
             break;
           case 'holiday':
             holidayCount++;
-            totalLoggedDays++;
             break;
           case 'sick':
             sickLeaveCount++;
@@ -76,11 +76,15 @@ export default function Stats() {
             vacationCount++;
             totalLoggedDays++;
             break;
+          case 'night':
+            nightCount++;
+            totalLoggedDays++;
+            break;
         }
       }
     });
 
-    const officeDaysRequired = workingDays * 0.6;
+    const officeDaysRequired = (workingDays - holidayCount) * 0.6;
     const completionPercentage = (totalLoggedDays / officeDaysRequired) * 100;
     const remainingDays = officeDaysRequired - totalLoggedDays;
 
@@ -94,6 +98,7 @@ export default function Stats() {
       sickLeaveCount,
       casualLeaveCount,
       vacationCount,
+      nightCount,
       totalLoggedDays,
       completionPercentage: Math.min(completionPercentage, 100),
       remainingDays,
@@ -200,119 +205,6 @@ export default function Stats() {
     </div>
   );
 
-  const ConfirmationModal = () => (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-red-100 rounded-lg">
-            <Trash2 className="w-6 h-6 text-red-600" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900">Clear All Data</h3>
-        </div>
-        <p className="text-gray-600 mb-6">
-          Are you sure you want to clear all data? This action cannot be undone and the data cannot be restored.
-        </p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={() => setShowConfirmation(false)}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
-            disabled={isClearing}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleResetAll}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isClearing}
-          >
-            {isClearing ? 'Clearing...' : 'Clear All Data'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  const VacationModal = () => {
-    const [newExtraDays, setNewExtraDays] = React.useState(extraVacationDays);
-
-    const handleSave = () => {
-      const totalDays = baseVacationDays + newExtraDays;
-      setVacationDays(selectedYear, totalDays);
-      setShowVacationModal(false);
-    };
-
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <PalmTree className="w-6 h-6 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900">Manage Vacation Days</h3>
-          </div>
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Year
-              </label>
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {Array.from({ length: 5 }, (_, i) => currentYear - 2 + i).map((year) => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-            <div className="bg-gray-50 p-6 rounded-xl space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Base Vacation Days
-                </label>
-                <p className="text-2xl font-bold text-gray-900">{baseVacationDays} days</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Extra Vacation Days
-                </label>
-                <input
-                  type="number"
-                  value={newExtraDays}
-                  onChange={(e) => setNewExtraDays(Number(e.target.value))}
-                  min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="pt-4 border-t">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Total Vacation Days
-                </label>
-                <p className="text-2xl font-bold text-blue-600">
-                  {baseVacationDays + newExtraDays} days
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-end gap-3 mt-6">
-            <button
-              onClick={() => setShowVacationModal(false)}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
-            >
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6 p-4 md:p-6">
       <div className="flex justify-end">
@@ -368,6 +260,12 @@ export default function Stats() {
             value={monthStats.vacationCount}
             color="orange"
           />
+          <StatCard
+            icon={Moon}
+            title="Night Days"
+            value={monthStats.nightCount}
+            color="indigo"
+          />
           {monthStats.totalExtraHours > 0 && (
             <StatCard
               icon={Clock}
@@ -385,6 +283,13 @@ export default function Stats() {
             <span className="font-medium text-purple-900">Vacation Days Remaining:</span>
             <span className="text-purple-700">{currentYearVacationDays - totalVacationUsed}</span>
           </div>
+        </div>
+
+        <div className="mt-6">
+          <ProgressBar 
+            percentage={monthStats.completionPercentage} 
+            remainingDays={monthStats.remainingDays}
+          />
         </div>
       </StatBlock>
 
@@ -430,6 +335,12 @@ export default function Stats() {
             title="Vacation Days"
             value={quarterStats.vacationCount}
             color="orange"
+          />
+          <StatCard
+            icon={Moon}
+            title="Night Days"
+            value={quarterStats.nightCount}
+            color="indigo"
           />
           {quarterStats.totalExtraHours > 0 && (
             <StatCard
