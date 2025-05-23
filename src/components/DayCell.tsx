@@ -1,7 +1,7 @@
 import React from 'react';
 import { format, isToday, isFriday, isSaturday } from 'date-fns';
 import { useWorkStore } from '../store';
-import { Briefcase, Home, PartyPopper, Thermometer, Coffee, Palmtree as PalmTree, Clock, Moon } from 'lucide-react';
+import { Briefcase, Home, PartyPopper, Thermometer, Coffee, Palmtree as PalmTree, Clock } from 'lucide-react';
 
 interface DayCellProps {
   date: Date;
@@ -28,8 +28,6 @@ export default function DayCell({ date, isWorkingDay, onClick }: DayCellProps) {
         return <Coffee className="w-3 h-3 text-amber-600" />;
       case 'vacation':
         return <PalmTree className="w-3 h-3 text-orange-600" />;
-      case 'night':
-        return <Moon className="w-3 h-3 text-indigo-600" />;
       default:
         return null;
     }
@@ -51,8 +49,6 @@ export default function DayCell({ date, isWorkingDay, onClick }: DayCellProps) {
         return 'ring-2 ring-amber-300';
       case 'vacation':
         return 'ring-2 ring-orange-300';
-      case 'night':
-        return 'ring-2 ring-indigo-300';
       default:
         return '';
     }
@@ -79,8 +75,6 @@ export default function DayCell({ date, isWorkingDay, onClick }: DayCellProps) {
         return 'bg-amber-50 hover:bg-amber-100';
       case 'vacation':
         return 'bg-orange-50 hover:bg-orange-100';
-      case 'night':
-        return 'bg-indigo-50 hover:bg-indigo-100';
       default:
         return 'bg-white hover:bg-gray-50';
     }
