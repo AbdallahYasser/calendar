@@ -1,4 +1,4 @@
-export type DayType = 'office' | 'home' | 'holiday' | 'sick' | 'casual' | 'vacation' | 'night';
+export type DayType = 'office' | 'home' | 'holiday' | 'sick' | 'casual' | 'vacation';
 
 export interface DayData {
   type: DayType;
